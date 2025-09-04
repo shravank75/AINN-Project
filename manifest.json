@@ -1,25 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "AI Vuln Scanner",
-  "description": "Detects clickjacking, malicious links, and script vulnerabilities.",
-  "version": "1.0",
-  "permissions": ["scripting", "activeTab"],
+  "name": "Web Security Scanner",
+  "version": "1.1",
+  "description": "Scan sites for clickjacking, malicious links, scripts, and upload risks.",
+  "permissions": ["scripting", "tabs", "activeTab"],
+  "host_permissions": ["<all_urls>"],
   "action": {
-    "default_popup": "popup.html",
-    "default_icon": {
-      "16": "icons/icon.png",
-      "48": "icons/icon.png",
-      "128": "icons/icon.png"
-    }
-  },
-  "background": {
-    "service_worker": "background.js"
-  },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "run_at": "document_idle"
-    }
-  ]
+    "default_popup": "popup.html"
+  }
 }

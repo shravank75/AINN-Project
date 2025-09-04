@@ -1,48 +1,57 @@
-// Check for clickjacking vulnerability
-const checkClickjacking = () => {
-    const headers = document?.head?.innerHTML;
-    if (!headers.includes('X-Frame-Options') && !headers.includes('frame-ancestors')) {
-        console.warn('[Clickjacking] Missing protective headers!');
-        return true;
-    }
-    return false;
-};
+(function runScan() {
+  // Helper: defang URLs
+  function defang(url) {
+    return url.replace(/^https?/i, match => match.replace(/http/i, 'hxxp'))
+              .replace(/\./g, '[.]');
+  }
 
-// Check for suspicious links
-const getMaliciousLinks = () => {
-    const suspicious = [];
-    document.querySelectorAll('a').forEach(link => {
-        const href = link.href;
-        if (href.match(/(bit\.ly|tinyurl|\.xyz|\.tk|@|base64|raw)/i)) {
-            suspicious.push(href);
-        }
-    });
-    return suspicious;
-};
+  // Results object
+  let results = {
+    clickjacking: "✅ Safe — Frame protection present",
+    links: "✅ None Detected",
+    scripts: "✅ None Found",
+    uploads: "✅ None Found"
+  };
 
-// Check for anonymous or suspicious scripts
-const detectAnonymousScripts = () => {
-    const scripts = document.querySelectorAll('script');
-    return [...scripts].filter(script =>
-        !script.src || script.src.startsWith("http://") || script.src.includes("unknown")
-    ).map(s => s.outerHTML.slice(0, 100) + "...");
-};
+  // ===== Clickjacking detection =====
+  const metaHeaders = [...document.querySelectorAll("meta[http-equiv]")]
+    .map(m => m.content);
+  if (!metaHeaders.join("").includes("X-Frame-Options") &&
+      !metaHeaders.join("").includes("frame-ancestors")) {
+    results.clickjacking = "⚠️ Vulnerable — No frame protection";
+  }
 
-// Detect file upload inputs
-const detectFileUploads = () => {
-    return [...document.querySelectorAll('input[type="file"]')].map(el => el.outerHTML);
-};
+  // ===== Links detection & defang =====
+  const links = [...document.querySelectorAll("a[href]")];
+  if (links.length) {
+    results.links = links.map((a, i) => {
+      const urlDefanged = defang(a.href);
+      // Highlight suspicious links
+      const isSuspicious = a.href.match(/(bit\.ly|tinyurl|\.ru|\.tk|http:\/\/\d+\.\d+\.\d+\.\d+)/i);
+      return isSuspicious ? `⚠️ Link #${i+1}: ${urlDefanged}` : `Link #${i+1}: ${urlDefanged}`;
+    }).join('\n');
+  }
 
-// Collect all results
-const scanPage = () => {
-    const results = {
-        clickjacking: checkClickjacking(),
-        maliciousLinks: getMaliciousLinks(),
-        anonymousScripts: detectAnonymousScripts(),
-        fileUploads: detectFileUploads(),
-    };
+  // ===== Script detection =====
+  const scripts = [...document.scripts];
+  const badScripts = scripts.filter(s => !s.src || s.src.includes("unknown.com"));
+  if (badScripts.length) {
+    results.scripts = badScripts
+      .map((s, i) => {
+        const snippet = s.src ? `External: ${s.src}` : `Inline #${i+1}: ${s.innerText.slice(0, 80)}...`;
+        return `⚠️ ${snippet}`;
+      })
+      .join('\n');
+  }
 
-    chrome.runtime.sendMessage({ action: "scanResults", data: results });
-};
+  // ===== File upload detection =====
+  const uploads = [...document.querySelectorAll('input[type="file"]')];
+  if (uploads.length) {
+    results.uploads = uploads
+      .map((el, i) => `⚠️ Upload #${i+1}: ${el.outerHTML}`)
+      .join('\n');
+  }
 
-scanPage();
+  // Send results to popup.js
+  chrome.runtime.sendMessage({ type: "scanResults", results });
+})();

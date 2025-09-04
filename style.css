@@ -1,47 +1,100 @@
+/* Popup body */
 body {
-  font-family: Arial, sans-serif;
-  margin: 15px;
-  background-color: #f9f9f9;
-  color: #333;
-  width: 300px;
+  font-family: monospace;
+  padding: 12px;
+  width: 480px;
+  height: 580px;
+  background: linear-gradient(145deg, #0f0c29, #302b63, #24243e);
+  color: #fff;
+  box-sizing: border-box;
+  border-radius: 20px;  /* popup curvature */
+  overflow: hidden;
 }
 
+/* Title */
 h2 {
+  font-size: 18px;
+  margin-bottom: 12px;
   text-align: center;
-  color: #0078d7;
-  margin-bottom: 15px;
-  font-weight: 600;
 }
 
-#results {
-  font-size: 14px;
-  line-height: 1.4;
+/* Grid layout for 4 cards */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 12px;
+  height: 440px;
+  margin-bottom: 8px;
 }
 
-p {
-  margin: 8px 0;
+/* Individual card style */
+.card {
+  background: linear-gradient(145deg, #1c1c1c, #2a2a2a);
+  border-radius: 15px; /* card curvature */
+  padding: 10px;
+  font-size: 12px;
+  overflow-y: auto;
+  overflow-x: auto; /* horizontal scroll for long links/scripts */
+  white-space: pre-wrap;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
 }
 
-strong {
-  color: #444;
+/* Card header */
+.card h4 {
+  margin: 0 0 4px 0;
+  font-weight: bold;
+  font-size: 13px;
 }
 
-a {
-  color: #0066cc;
-  text-decoration: none;
-  word-break: break-all;
+/* Pre inside card */
+.card pre {
+  font-family: monospace;
+  font-size: 11px;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
-a:hover {
-  text-decoration: underline;
+/* Color-coded results */
+.safe {
+  color: #4caf50;
+  font-weight: bold;
 }
 
 .warning {
-  color: #d9534f;
+  color: #f44336;
   font-weight: bold;
 }
 
-.safe {
-  color: #5cb85c;
+.neutral {
+  color: #9e9e9e;
   font-weight: bold;
+}
+
+/* Scan Again button */
+#rescan {
+  display: block;
+  width: 90%;
+  margin: 10px auto 0 auto;
+  padding: 8px 0;
+  border: none;
+  border-radius: 10px;
+  background: #3b3b3b;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+#rescan:hover {
+  background: #555;
+  transform: translateY(-1px);
+}
+
+/* Timestamp */
+.timestamp {
+  font-size: 11px;
+  text-align: center;
+  margin-top: 6px;
+  color: #bbb;
 }

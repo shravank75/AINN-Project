@@ -1,11 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <title>Web Security Scanner</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h2>🔍 Scan Results</h2>
-  <div id="results">Scanning...</div>
+  <h2>Web Security Scanner</h2>
+
+  <div class="grid">
+    <div class="card clickjacking">
+      <h4>Clickjacking</h4>
+      <pre>Loading...</pre>
+    </div>
+    <div class="card links">
+      <h4>Links</h4>
+      <pre>Loading...</pre>
+    </div>
+    <div class="card scripts">
+      <h4>Scripts</h4>
+      <pre>Loading...</pre>
+    </div>
+    <div class="card uploads">
+      <h4>File Uploads</h4>
+      <pre>Loading...</pre>
+    </div>
+  </div>
+
+  <div class="timestamp" id="timestamp">Scanned At: N/A</div>
+  <button id="rescan">🔄 Scan Again</button>
+
   <script src="popup.js"></script>
 </body>
 </html>
